@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_toolbar_title">/R/CasualUK</string>
+    <string name="generic_error_message">Oh no! there has been an error</string>
+</resources>
