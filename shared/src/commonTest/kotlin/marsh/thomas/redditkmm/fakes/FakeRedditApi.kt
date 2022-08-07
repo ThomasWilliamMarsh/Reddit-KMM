@@ -15,7 +15,7 @@ internal class FakeRedditApi : RedditApi {
         this.posts = Result.success(posts)
     }
 
-    override suspend fun fetchPosts(after: String?): PostPage {
+    override suspend fun fetchPosts(subreddit: String, after: String?): PostPage {
         if (posts.isSuccess) {
             return posts.getOrThrow()
         } else {

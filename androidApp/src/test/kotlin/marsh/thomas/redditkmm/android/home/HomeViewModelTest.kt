@@ -29,7 +29,6 @@ internal class HomeViewModelTest {
     }
 
     @Test
-    @Ignore
     fun `Update view state when we tap a post`() = runBlocking {
         val url = "post url"
 
@@ -42,7 +41,6 @@ internal class HomeViewModelTest {
     }
 
     @Test
-    @Ignore
     fun `Update view state when we handled navigation`() = runBlocking {
         val url = "post url"
 
@@ -165,6 +163,55 @@ internal class HomeViewModelTest {
                         )
                     )
                 ), awaitItem()
+            )
+        }
+    }
+
+    @Test
+    fun `Update viewstate when we enter text into search bar`() = runBlocking {
+        val searchTerm = "casualuk"
+        val sut = HomeViewModel(postsRepository, validUrl)
+        sut.viewState.test {
+            assertEquals(awaitItem().searchTerm, "")
+            sut.onAction(SearchTermChanged(searchTerm))
+            assertEquals(awaitItem().searchTerm, searchTerm)
+        }
+    }
+
+    @Test
+    fun `Update viewstate when we press search`() = runBlocking {
+        val searchTerm = "casualuk"
+        val post = createPost()
+        val post2 = createPost(id = "post 2", title = "post 2")
+        postsRepository.queueSuccess(listOf(post))
+        postsRepository.queueSuccess(listOf(post2))
+
+        val sut = HomeViewModel(postsRepository, validUrl)
+        sut.viewState.test {
+            assertEquals(
+                awaitItem().posts, listOf(
+                    HomeViewModel.ViewState.Post(
+                        title = post.title,
+                        imageUrl = "",
+                        url = post.url,
+                        ups = post.ups.toString()
+                    )
+                )
+            )
+
+            sut.onAction(SearchTermChanged(searchTerm))
+            skipItems(1)
+
+            sut.onAction(SearchTapped)
+
+            assertEquals(awaitItem().posts, listOf(
+                    HomeViewModel.ViewState.Post(
+                        title = post2.title,
+                        imageUrl = "",
+                        url = post2.url,
+                        ups = post2.ups.toString()
+                    )
+                )
             )
         }
     }

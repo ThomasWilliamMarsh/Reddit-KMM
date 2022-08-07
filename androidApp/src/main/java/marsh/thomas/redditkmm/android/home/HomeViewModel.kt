@@ -32,9 +32,16 @@ class HomeViewModel(
             is UiAction.PostTapped -> _viewState.update {
                 it.copy(navigationState = Screen.PostDetail(action.url))
             }
+            is UiAction.SearchTermChanged -> _viewState.update {
+                it.copy(searchTerm = action.term)
+            }
             UiAction.ScrolledToBottom -> fetchPage()
             UiAction.HandledNavigation -> _viewState.update { it.copy(navigationState = Screen.Posts) }
             UiAction.ErrorDisplayed -> _viewState.update { it.copy(showError = false) }
+            UiAction.SearchTapped -> {
+                postsRepository.subreddit = _viewState.value.searchTerm
+                fetchPage()
+            }
         }
     }
 
@@ -91,6 +98,7 @@ class HomeViewModel(
         val isLoadingMore: Boolean = false,
         val showError: Boolean = false,
         val posts: List<Post> = emptyList(),
+        val searchTerm: String = "",
         val navigationState: Screen = Screen.Posts
     ) {
         data class Post(val title: String, val imageUrl: String, val url: String, val ups: String)
@@ -98,6 +106,8 @@ class HomeViewModel(
 
     sealed class UiAction {
         data class PostTapped(val url: String) : UiAction()
+        data class SearchTermChanged(val term: String) : UiAction()
+        object SearchTapped : UiAction()
         object HandledNavigation : UiAction()
         object ErrorDisplayed : UiAction()
         object ScrolledToBottom : UiAction()

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,8 +21,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -40,7 +44,9 @@ fun HomeScreen(viewModel: HomeViewModel = getViewModel()) {
         viewState = viewState,
         onScrolledToEnd = { viewModel.onAction(ScrolledToBottom) },
         onPostClick = { viewModel.onAction(PostTapped(it)) },
-        onErrorDisplayed = { viewModel.onAction(ErrorDisplayed) }
+        onErrorDisplayed = { viewModel.onAction(ErrorDisplayed) },
+        onSearchTermChanged = { viewModel.onAction(SearchTermChanged(it)) },
+        onSearchTapped = { viewModel.onAction(SearchTapped) }
     )
 
     Navigation(viewState.navigationState) {
@@ -53,11 +59,19 @@ private fun HomeScreen(
     viewState: HomeViewModel.ViewState,
     onPostClick: (url: String) -> Unit,
     onScrolledToEnd: () -> Unit,
-    onErrorDisplayed: () -> Unit
+    onErrorDisplayed: () -> Unit,
+    onSearchTermChanged: (term: String) -> Unit,
+    onSearchTapped: () -> Unit
 ) {
 
     Scaffold(
-        topBar = { RedditToolbar() },
+        topBar = {
+            RedditToolbar(
+                searchTerm = viewState.searchTerm,
+                onSearchTermChanged = onSearchTermChanged,
+                onSearchTapped = onSearchTapped
+            )
+        },
     ) {
         Box(
             Modifier
@@ -132,7 +146,7 @@ private fun LoadingIndicator(modifier: Modifier = Modifier) {
 @Composable
 private fun LoadingMoreIndicator(show: Boolean) {
     AnimatedVisibility(visible = show) {
-        Box(Modifier.fillMaxWidth()) {
+        Box(Modifier.fillMaxWidth().padding(8.dp)) {
             LoadingIndicator(Modifier.align(Alignment.Center))
         }
     }
@@ -176,20 +190,47 @@ private fun Navigation(screen: HomeViewModel.Screen, onHandled: () -> Unit) {
             //Do nothing
         }
     }
-
 }
 
 @Composable
-private fun RedditToolbar() {
-
+private fun RedditToolbar(
+    searchTerm: String,
+    onSearchTermChanged: (term: String) -> Unit,
+    onSearchTapped: () -> Unit
+) {
     TopAppBar(
         backgroundColor = RedditTheme.colors.accent,
         contentColor = RedditTheme.colors.background,
         content = {
             Text(
                 modifier = Modifier.padding(start = 16.dp),
-                text = stringResource(R.string.default_toolbar_title),
+                text = stringResource(R.string.subreddit_prefix),
                 style = RedditTheme.typography.highlight
+            )
+            TextField(
+                value = searchTerm,
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.subreddit_textfield_hint),
+                        style = RedditTheme.typography.highlight,
+                        color = RedditTheme.colors.background
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    cursorColor = RedditTheme.colors.background,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    backgroundColor = RedditTheme.colors.accent
+                ),
+                onValueChange = { onSearchTermChanged(it) },
+                textStyle = RedditTheme.typography.highlight,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onSearchTapped()
+                    }
+                ),
             )
         }
     )
@@ -198,7 +239,7 @@ private fun RedditToolbar() {
 @Preview
 @Composable
 fun ToolbarPreview() = RedditTheme {
-    RedditToolbar()
+    RedditToolbar("/r/casualuk", {}, {})
 }
 
 @Preview

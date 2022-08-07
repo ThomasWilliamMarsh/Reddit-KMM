@@ -25,6 +25,8 @@ interface PostRepository {
 
     val posts: Flow<List<Post>>
 
+    var subreddit: String
+
     suspend fun fetchPage()
 }
 
@@ -35,8 +37,15 @@ class PostRepositoryImpl(private val api: RedditApi) : PostRepository {
 
     private var nextPage: String? = null
 
+    override var subreddit: String = "casualuk"
+        set(value) {
+            nextPage = null
+            _posts.update { emptyList() }
+            field = value
+        }
+
     override suspend fun fetchPage() {
-        val page = api.fetchPosts(nextPage)
+        val page = api.fetchPosts(subreddit, nextPage)
         nextPage = page.pageInfo.after
 
         _posts.update { it + page.posts }
@@ -54,6 +63,8 @@ class FakePostsRepository : PostRepository {
     private val stream = MutableStateFlow<List<Post>?>(null)
 
     override val posts: Flow<List<Post>> = stream.filterNotNull()
+
+    override var subreddit: String = "/r/casualuk"
 
     fun queueSuccess(posts: List<Post>) {
         queue.add(Result.success(posts))

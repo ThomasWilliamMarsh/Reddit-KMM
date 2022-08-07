@@ -9,7 +9,7 @@ import marsh.thomas.redditkmm.common.network.entities.toDomain
 import marsh.thomas.redditkmm.common.repository.PostPage
 
 interface RedditApi {
-    suspend fun fetchPosts(after: String? = null): PostPage
+    suspend fun fetchPosts(subreddit: String, after: String? = null): PostPage
 
     companion object {
         const val BASE_URL: String = "https://oauth.reddit.com"
@@ -18,8 +18,8 @@ interface RedditApi {
 
 class RedditApiImpl(private val client: HttpClient) : RedditApi {
 
-    override suspend fun fetchPosts(after: String?): PostPage {
-        return client.get("$BASE_URL/r/casualuk/best.json?after=$after")
+    override suspend fun fetchPosts(subreddit: String, after: String?): PostPage {
+        return client.get("$BASE_URL/r/$subreddit/best.json?after=$after")
             .body<PostsResponse>()
             .toDomain()
     }

@@ -59,4 +59,19 @@ class PostRepositoryTest {
 
         assertEquals(sut.posts.first(), listOf(page1Post, page2Post))
     }
+
+    @Test
+    fun changingSubredditClearsList() = runBlocking {
+        val page1Post = createPost(id = "page 1")
+        val page1 = createPage(posts = listOf(page1Post))
+
+        api.queuePosts(page1)
+        sut.fetchPage()
+
+        assertEquals(sut.posts.first(), listOf(page1Post))
+
+        sut.subreddit = "new_subreddit"
+
+        assertEquals(sut.posts.first(), emptyList())
+    }
 }
