@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="generic_error_message">Oh no! there has been an error</string>
+    <string name="app_name">Reddit Multiplatform</string>
+    <string name="subreddit_prefix">/r/</string>
+    <string name="subreddit_textfield_hint">Search…</string>
+</resources>

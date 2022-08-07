@@ -14,6 +14,7 @@ androidCore = "1.8.0"
 viewModel = "2.6.0-alpha01"
 koil = "2.1.0"
 turbine = "0.9.0"
+moko-resources = "0.21.0"
 
 compileSdk = "33"
 minSdk = "21"
@@ -51,6 +52,8 @@ android-compose-material = { module = "androidx.compose.material:material", vers
 android-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose"}
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "koil"}
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine"}
+moko-strings = { module = "dev.icerock.moko:resources", version.ref = "moko-resources" }
+moko-strings-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko-resources" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -62,3 +65,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }

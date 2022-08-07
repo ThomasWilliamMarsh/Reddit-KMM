@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.moko.resources)
 }
 
 version = "1.0"
@@ -28,6 +29,7 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.koin.test)
                 implementation(libs.multiplatform.settings)
+                implementation(libs.moko.strings)
             }
         }
         val commonTest by getting {
@@ -76,4 +78,9 @@ android {
         minSdk = 21
         targetSdk = 33
     }
+}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "energy.octopus.octopusenergy"
+    multiplatformResourcesSourceSet = "commonMain"
 }
